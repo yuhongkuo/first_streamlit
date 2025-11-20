@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第一個streamlit專案</title>
+    <link rel="icon" href="asset/ok.ico" type="image/x-icon">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        #root {
+            width: 100%;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="error-message" class="error"></div>
+        <div id="stlite-container">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>正在載入應用程式...</p>
+            </div>
+        </div>
+    </div>
+    
+    <!--把python檔案和js檔案結合-->
+    <script type="module">
+        import { mount } from "https://cdn.jsdelivr.net/npm/@stlite/browser@0.85.1/build/stlite.js";
+        
+        const container = document.getElementById("stlite-container");
+        const errorDiv = document.getElementById("error-message");
+        
+        // 隱藏載入動畫
+        const hideLoading = () => {
+            const loading = container.querySelector('.loading');
+            if (loading) {
+                loading.style.display = 'none';
+            }
+        };
+        
+        // 顯示錯誤訊息
+        const showError = (message) => {
+            errorDiv.textContent = `錯誤: ${message}`;
+            errorDiv.style.display = 'block';
+            hideLoading();
+        };
+        
+        // 初始化應用
+        const initApp = async () => {
+            try {
+                // 使用 mount() 函數載入多頁應用
+                // 根據文檔，可以使用 url 選項來載入文件
+                mount(
+                    {
+                        entrypoint: "main.py",
+                        //python套件
+                        requirements: [
+                            "matplotlib",
+                            "numpy",
+                            "pandas",
+                            "plotly",
+                            "streamlit",
+                        ],
+                        files: {
+                            "main.py": {
+                                url: "./main.py"
+                            },                            
+                            "data/sales.csv": {
+                                url: "data/sales.csv"
+                            },
+                            "data/總人口.csv": {
+                                url: "data/總人口.csv"
+                            },
+                            "data/性別比.csv": {
+                                url: "data/性別比.csv"
+                            },
+                            "pages/1_導入資料.py": {
+                                url: "pages/1_導入資料.py"
+                            },
+                            "pages/2_業務資料標注.py": {
+                                url: "pages/2_業務資料標注.py"
+                            },
+                            "pages/3_業務產品分析.py": {
+                                url: "pages/3_業務產品分析.py"
+                            },
+                            "pages/4_互動資料選單.py": {
+                                url: "pages/4_互動資料選單.py"
+                            },
+                             "pages/5_桃園市人口消長.py": {
+                                url: "pages/5_桃園市人口消長.py"
+                            },
+                            "pages/6_桃園市人口金字塔.py": {
+                                url: "pages/6_桃園市人口金字塔.py"
+                            },
+                        }
+                    },
+                    container
+                );
+                
+                hideLoading();
+                console.log("應用程式載入成功");
+            } catch (error) {
+                showError(error.message || "載入應用程式時發生錯誤");
+                console.error("載入錯誤:", error);
+            }
+        };
+        
+        // 啟動應用
+        initApp();
+    </script>
+</body>
+</html>
+
+
